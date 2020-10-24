@@ -12,8 +12,19 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
+  show:
+    runs-on: ubuntu-latest
+    steps:
+      - name: show
+        env:
+          GHREF: ${ { github.ref } }
+          GHHREF: ${ { github.href } }
+        run: |
+          echo "$GHREF $GHHREF"
+    
+
   buildstaging:
-    if: endsWith('staging', github.ref)
+    if: endsWith(github.ref, 'staging')
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -23,7 +34,7 @@ jobs:
         run: echo "Build staging for config d1"
 
   buildprod:
-    if: endsWith('main', github.ref)
+    if: endsWith(github.ref, 'main')
     runs-on: ubuntu-latest
 
     steps:
