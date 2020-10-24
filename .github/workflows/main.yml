@@ -6,21 +6,38 @@ name: CI
 # events but only for the main branch
 on:
   push:
-    branches: [ main ]
+    branches: [ main, staging ]
+    paths: 'config/d1/**'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
+
+  show:
+    runs-on: ubuntu-latest
+    steps:
+      - name: show
+        env:
+          GHREF: ${ { github.ref } }
+          GHHREF: ${ { github.href } }
+        run: |
+          echo "$GHREF $GHHREF"
+    
+
+  buildstaging:
+    if: endsWith(github.ref, 'staging')
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      - name: build
+        run: echo "Build staging for config d1"
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+  buildprod:
+    if: endsWith(github.ref, 'main')
+    runs-on: ubuntu-latest
 
+    steps:
+      - uses: actions/checkout@v2
+      - name: sync
+        run: echo "Sync staging to prod"
