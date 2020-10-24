@@ -23,7 +23,7 @@ jobs:
         run: echo "Build staging for config d1"
 
   buildprod:
-    if: endsWith('staging', github.headref)
+    if: endsWith('main', github.headref)
     runs-on: ubuntu-latest
 
     steps:
