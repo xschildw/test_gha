@@ -17,10 +17,10 @@ jobs:
     steps:
       - name: show
         env:
-          GHREF: ${ { github.ref } }
-          GHHREF: ${ { github.href } }
+          GHREF: ${{ github.ref }}
+          GHHREF: ${{ github.href }}
         run: |
-          echo "$GHREF $GHHREF"
+          echo $GHREF $GHHREF
     
 
   buildstaging:
@@ -29,15 +29,45 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: checkout
+        uses: actions/checkout@v2
+
       - name: build
-        run: echo "Build staging for config d1"
+        run: |
+          echo "Build staging for config d1"
+          echo "yarn build etc."
+    
+      # - name: config_aws_creds_staging
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id:
+      #     aws-secret-access-key:
+      #     aws-region: us-east-1
+
+      - name: sync_build_s3
+        run: |
+          echo aws s3 sync 
+          echo aws cloudformation create-invalidation 
 
   buildprod:
     if: endsWith(github.ref, 'main')
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: checkout
+        uses: actions/checkout@v2
+
       - name: sync
         run: echo "Sync staging to prod"
+
+      # - name: config_aws_creds_staging
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id:
+      #     aws-secret-access-key:
+      #     aws-region: us-east-1
+
+      - name: sync_build_s3
+        run: |
+          echo aws s3 sync staging_bucket prod_bucket
+          echo aws cloudformation create-invalidation 
